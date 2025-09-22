@@ -4,6 +4,55 @@ from docx import Document  #to read word files
 from sklearn.feature_extraction.text import CountVectorizer  #convert text to numbers
 from sklearn.metrics.pairwise import cosine_similarity  # calculate similarity if any
 import re  #to clean texts
+import base64
+
+
+
+def set_bg_local(image_file):
+    with open(image_file, "rb") as f:
+        data = f.read()
+    encoded = base64.b64encode(data).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpg;base64,{encoded}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Call at the top
+set_bg_local("bg.jpg")
+
+
+
+st.markdown("<h1 style='text-align: center; color: #2c3e50;'>📄 AI Resume Analyzer</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #34495e;'>Upload your resume and job description to check match score and missing skills.</p>", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+div.stButton > button {
+    background-color: #3498db;
+    color: white;
+    font-size: 16px;
+    border-radius: 10px;
+    padding: 0.5em 1.5em;
+    font-weight: bold;
+    transition: 0.3s;
+}
+div.stButton > button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 
 
 USER_CREDENTIALS ={
@@ -20,22 +69,13 @@ def login():
     if st.button("login"):
 
         if username in USER_CREDENTIALS and USER_CREDENTIALS[username]==password:
-            st.session_state("logged in") = True
-            st.success("logged in succesfully")
+            st.session_state["logged_in"] = True
+            st.success("logged_in succesfully")
 
         else:
             st.error("login failed")
         
-        if "logged in" not in st.session_state:
-            st.session_state["logged in"] = False
-
-        if st.session_state["logged in"]:
-            resume_analayzer()
-        
-        else:   
-
-            login()
-
+      
 
 def read_resume(file):
     text=""
@@ -63,7 +103,7 @@ def clean_text(text):
     text=text.lower() #converts to lower
     text = re.sub(r"[^a-z\s]","",text)  #remove numbers and punctuation and keep only numbers from a-z and spaces
     words=text.split()  #add words by splitting words
-    return "".join(words)  # returns splitted words into a string with a single space
+    return " ".join(words)  # returns splitted words into a string with a single space
 
 def resume_analayzer():
 
@@ -85,8 +125,32 @@ def resume_analayzer():
 
             score = cosine_similarity(vectors[0],vectors[1])[0][0]
 
+            resume_words=set(resume_text.split())
 
+            jd_words=set(jd_clean.split())   #to split into words
+
+            missing_keywords=jd_words-resume_words  # find missing words
+            
+            st.write(f"score: {round(score*100,2)}%")
+
+            st.write("Missing Keywords:", ", ".join(missing_keywords))
+
+        else:
+
+            st.warning("please upload a resume and enter a job description")
+
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Go to", ["Login", "Analyzer"])
     
+if st.session_state["logged_in"]:
+    resume_analayzer()
+else:   
+    login()
+
+
 
 
 
