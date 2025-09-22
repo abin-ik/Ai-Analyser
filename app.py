@@ -81,7 +81,7 @@ def resume_analayzer():
 
 
             vectorizer = CountVectorizer()   # counts text into numbers to count how many times a word occurs
-            vectors = vectorizer.fit_transform([resume_text,jd_clean]) # learn the vocabulary of unique words and transform it to numbers
+            vectors = vectorizer.fit_transform([resume_text,jd_clean]) # Learn the vocabulary of unique words and transform it to numbers
 
             score = cosine_similarity(vectors[0],vectors[1])[0][0]
 
