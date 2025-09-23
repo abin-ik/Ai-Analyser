@@ -2,7 +2,7 @@ import streamlit as st # it is used to change our code in web apps
 import PyPDF2 # to read a pdf file
 from docx import Document  #to read word files
 from sklearn.feature_extraction.text import CountVectorizer  #convert text to numbers
-from sklearn.metrics.pairwise import cosine_similarity  # calculate similarity if any
+from sklearn.metrics.pairwise import cosine_similarity  # calculate similarity If any
 import re  #to clean texts
 import base64
 
