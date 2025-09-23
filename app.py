@@ -31,8 +31,8 @@ set_bg_local("bg.jpg")
 
 
 
-st.markdown("<h1 style='text-align: center; color: #2c3e50;'>📄 AI Resume Analyzer</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #34495e;'>Upload your resume and job description to check match score and missing skills.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: white'>📄 AI Resume Analyzer</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: white'>Upload your resume and job description to check match score and missing skills.</p>", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -71,11 +71,17 @@ def login():
         if username in USER_CREDENTIALS and USER_CREDENTIALS[username]==password:
             st.session_state["logged_in"] = True
             st.success("logged_in succesfully")
+            st.rerun()
+
+            
 
         else:
             st.error("login failed")
         
-      
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+
+
 
 def read_resume(file):
     text=""
@@ -131,9 +137,26 @@ def resume_analayzer():
 
             missing_keywords=jd_words-resume_words  # find missing words
             
-            st.write(f"score: {round(score*100,2)}%")
+            #st.write(f"score: {round(score*100,2)}%")
 
-            st.write("Missing Keywords:", ", ".join(missing_keywords))
+            #st.write("Missing Keywords:", ", ".join(missing_keywords))
+
+            st.markdown(f"""
+        <div style="
+            background-color: black;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.6;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+            margin-top: 20px;
+        ">
+            <h3 style="color:#00ffcc;">📊 Resume Analysis Result</h3>
+            <p><b>Match Score:</b> {round(score*100, 2)}%</p>
+            <p><b>Missing Keywords:</b> {", ".join(missing_keywords) if missing_keywords else "None 🎉"}</p>
+        </div>
+    """, unsafe_allow_html=True)
 
         else:
 
@@ -142,8 +165,7 @@ def resume_analayzer():
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Login", "Analyzer"])
+
     
 if st.session_state["logged_in"]:
     resume_analayzer()
